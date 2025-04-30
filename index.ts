@@ -78,7 +78,7 @@ Bun.serve({
 		const fileName = `${contractAddress}.json`;
 		const filePath = `${path}/${fileName}`;
 
-		console.info(`Indexing nft. The data will be saved to ${path}`);
+		console.info(`Indexing nft. The data will be saved to ${filePath}`);
 
 		const data = await crawlNfts(contract);
 		// Need to convert bigints to strings
