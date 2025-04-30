@@ -2,8 +2,9 @@ import { defineChain, getContract, isAddress, type Chain } from "thirdweb";
 import { getBytecode } from "thirdweb/contract";
 import { client } from "./src/client";
 import { crawlNfts } from "./src/crawl-nfts";
-import { mkdirSync } from "node:fs";
-import { dirname } from "node:path";
+import { mkdir } from "node:fs/promises";
+import { writeFileSync } from "node:fs";
+import { stringify } from "thirdweb/utils";
 
 // Chain id should be a positive integer number
 const isValidChainId = (value: string) =>
@@ -73,17 +74,20 @@ Bun.serve({
 			client,
 		});
 
-		const path = `./indexed-data/${chainId}/${contractAddress}.json`;
+		const path = `indexed-data/${chainId}`;
+		const fileName = `${contractAddress}.json`;
+		const filePath = `${path}/${fileName}`;
 
 		console.info(`Indexing nft. The data will be saved to ${path}`);
 
 		const data = await crawlNfts(contract);
+		// Need to convert bigints to strings
+		const serializedData = data.map((item) => JSON.parse(stringify(item)));
+
 		console.info("All data indexed");
-
-		mkdirSync(dirname(path), { recursive: true });
-
+		await mkdir(path, { recursive: true });
 		console.info("Writing data to json file");
-		await Bun.write(path, JSON.stringify(data, null, 2));
+		writeFileSync(filePath, JSON.stringify(serializedData, null, 2));
 		console.info("Data written to file.");
 
 		return new Response(

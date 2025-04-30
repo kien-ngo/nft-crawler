@@ -20,7 +20,7 @@ export async function handleRequestLimit<T>(
 	for (const [index, value] of requestChunks.entries()) {
 		console.info(`Indexing chunk number ${index}`);
 		data = data.concat(await Promise.all(value));
-		await sleep(2000);
+		await sleep(300);
 	}
 
 	return data;
